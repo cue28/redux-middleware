@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getPost } from '../modules/posts';
+import { getPost, goToHome } from '../modules/posts';
 import Post from '../components/Post';
 
 function PostContainer({ postId }) {
@@ -14,15 +14,21 @@ function PostContainer({ postId }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (data) return; // 포스트가 존재하면 아예 요청을 하지 않음
     dispatch(getPost(postId));
-  }, [postId, dispatch, data]);
+  }, [dispatch, postId]);
 
-  if (loading) return <div>로딩중...</div>;
+  if (loading && !data) return <div>로딩중...</div>; // 로딩중이고 데이터 없을때만
   if (error) return <div>에러 발생!</div>;
   if (!data) return null;
 
-  return <Post post={data} />;
+  return (
+    <>
+      <button onClick={() => dispatch(goToHome())}>홈으로 이동</button>
+      <Post post={data} />
+    </>
+  );
 }
 
 export default PostContainer;
+
+//https://react.vlpt.us/redux-middleware/07-router-with-thunk.html -> 화면 렌딩 되지 않음.
